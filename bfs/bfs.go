@@ -2,43 +2,46 @@ package main
 
 import "fmt"
 
-type Stack struct {
+type queue struct {
 	items []int
 }
 
-func (s *Stack) Push(i int) {
-	s.items = append(s.items, i)
-}
-
-func NewStack() *Stack {
-	return &Stack{
+func NewQeue() *queue {
+	return &queue{
 		items: make([]int, 0),
 	}
 }
 
-//Pop will removea value at th end
-//and RETURNs th remove vlue
-func (s *Stack) Pop() int {
-	if len(s.items) == 0 {
+func (q *queue) Add(i int) {
+	q.items = append(q.items, i)
+}
+
+func (q *queue) Remove() int {
+	if len(q.items) == 0 {
 		return -1
 	}
-	l := len(s.items) - 1
-	toRemove := s.items[l]
-	s.items = s.items[:l]
-	return toRemove
+
+	item := q.items[0]
+	q.items = q.items[1:]
+
+	return item
 }
 
-func (s *Stack) HasItems() bool {
-	return len(s.items) > 0
+func (q *queue) HasItems() bool {
+	return len(q.items) > 0
 }
 
-var graph = map[int][]int{
-	1: {3, 2, 4},
-	2: {5},
-	3: {},
-	4: {7},
-	5: {6},
-}
+// func NewBFSCommand() *cobra.Command {
+// 	cmd := &cobra.Command{
+// 		Use:   "bfs",
+// 		Short: "...",
+// 		Run: func(cmd *cobra.Command, args []string) {
+// 			runBFS()
+// 		},
+// 	}
+
+// 	return cmd
+// }
 
 // 1 -> 3,2,4
 // 2 -> 5
@@ -50,19 +53,31 @@ var graph = map[int][]int{
 // visits -> 1,4,7,2,5,6,3
 // stack ->
 
+// BFS
+// visits -> 1,3,2,4,5,7,6
+// queue ->
+
+var graph = map[int][]int{
+	1: {3, 2, 4},
+	2: {5},
+	3: {},
+	4: {7},
+	5: {6},
+}
+
 func main() {
-	s := NewStack()
+	q := NewQeue()
 	rootNode := 1
 	visited := make([]int, 0)
 
-	s.Push(rootNode)
-	for s.HasItems() {
-		n := s.Pop()
+	q.Add(rootNode)
+	for q.HasItems() {
+		n := q.Remove()
 		visited = append(visited, n)
 
 		adjs := graph[n]
 		for _, adj := range adjs {
-			s.Push(adj)
+			q.Add(adj)
 		}
 	}
 
